@@ -1,4 +1,4 @@
-package com.greedygame.brokenandroidcomposeproject.ui
+package com.greedygame.brokenandroidcomposeproject.ui.DetailScreen
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
