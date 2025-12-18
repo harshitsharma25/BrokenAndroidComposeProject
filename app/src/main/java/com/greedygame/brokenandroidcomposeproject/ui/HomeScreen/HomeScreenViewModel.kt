@@ -1,4 +1,4 @@
-package com.greedygame.brokenandroidcomposeproject.ui.NewScreen
+package com.greedygame.brokenandroidcomposeproject.ui.HomeScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +7,7 @@ import com.greedygame.brokenandroidcomposeproject.repository.ArticleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ sealed class NewScreenUiState {
 
 
 @HiltViewModel
-class NewScreenViewModel @Inject constructor(val repository: ArticleRepository) : ViewModel() {
+class HomeScreenViewModel @Inject constructor(val repository: ArticleRepository) : ViewModel() {
     private val _articles = MutableStateFlow<NewScreenUiState>(NewScreenUiState.Empty)
     val articles: StateFlow<NewScreenUiState> = _articles
 
@@ -33,5 +34,12 @@ class NewScreenViewModel @Inject constructor(val repository: ArticleRepository) 
                 _articles.value = NewScreenUiState.Error
             }
         }
+    }
+
+    private val _selectedArticle = MutableStateFlow<Article?>(null)
+    val selectedArticle: StateFlow<Article?> = _selectedArticle.asStateFlow()
+
+    fun selectArticle(article: Article) {
+        _selectedArticle.value = article
     }
 }

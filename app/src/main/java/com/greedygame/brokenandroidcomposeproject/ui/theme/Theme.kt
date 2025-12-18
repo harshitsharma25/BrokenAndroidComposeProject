@@ -9,12 +9,20 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Purple80, // Purple80
+    secondary = Black_card, // PurpleGrey80
+    tertiary = LigthGray, // Pink80
+    background = Color(0xFF000000), // Pure black background
+    surface = Color(0xFF625B71), // Dark gray surface
+    onPrimary = Color.White, // White text on purple
+    onSecondary = Color.Black, // Black text on purple-gray
+    onTertiary = Color.Black, // Black text on pink
+    onBackground = Color.White, // White text on black background
+    onSurface = Color.Black // Black text on gray surface
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -33,26 +41,17 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+
+// Here we are just using only Dark color Scheme ,
+// In future can add Dynamic color scheme. (For short project purpose only)
 @Composable
-fun BrokenAndroidComposeProjectTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+fun ArticlesAppTheme(
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
+    // Directly use the DarkColorScheme, ignoring dynamicColor and darkTheme parameters
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+        colorScheme = DarkColorScheme, // Always use DarkColorScheme
+        typography = Typography, // Ensure Typography is defined elsewhere
         content = content
     )
 }

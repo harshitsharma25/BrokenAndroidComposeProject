@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_16_dp">16dp</dimen>
+    <dimen name="padding_32_dp">32dp</dimen>
+    <dimen name="padding_48_dp">48dp</dimen>
+    <dimen name="shimmer_card_height">250dp</dimen>
+</resources>
