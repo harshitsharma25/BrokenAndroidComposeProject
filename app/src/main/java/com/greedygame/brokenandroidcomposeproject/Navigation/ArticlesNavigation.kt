@@ -26,7 +26,7 @@ fun ArticlesNavigation(colorScheme: ColorScheme,viewModel : HomeScreenViewModel 
 
     NavHost(
         navController = navController,
-        startDestination = Screens.HOME_SCREEN.name
+        startDestination = Screens.SPLASH_SCREEN.name
     ) {
         composable(route = Screens.SPLASH_SCREEN.name) {
             SplashScreen(navController)

@@ -130,8 +130,8 @@ fun ArticleScreen(
 ) {
     val context = LocalContext.current
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.my_articles)) },
-            colors = TopAppBarDefaults.topAppBarColors(colorScheme.primary.copy(alpha = 0.95f))) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.my_articles), color = Color.Black.copy(alpha = 0.75f), fontWeight = FontWeight.Black, fontSize = 30.sp) },
+            colors = TopAppBarDefaults.topAppBarColors(colorScheme.primary.copy(alpha = 1f))) }
     ){ innerPadding ->
 
         LazyColumn(modifier = modifier.fillMaxSize().padding(innerPadding)) {
