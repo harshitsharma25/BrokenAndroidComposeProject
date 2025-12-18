@@ -23,15 +23,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.greedygame.brokenandroidcomposeproject.model.Article
+import com.greedygame.brokenandroidcomposeproject.ui.HomeScreen.HomeScreenViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,8 +45,9 @@ fun DetailScreen(
     article: Article,
 ) {
     var isLiked by remember { mutableStateOf(false) }
-    var isBookmarked by remember { mutableStateOf(false) }
+    var isEditedDescription by remember { mutableStateOf(false) }
     var showShareDialog by remember { mutableStateOf(false) }
+    val viewModel : HomeScreenViewModel =  hiltViewModel()
 
     // Scroll state for parallax effect
     val scrollState = rememberScrollState()
@@ -51,7 +55,8 @@ fun DetailScreen(
     val imageHeightPx = with(LocalDensity.current) { imageHeight.toPx() }
     val parallaxOffset = (scrollState.value * 0.5f).coerceAtMost(imageHeightPx)
     val context = LocalContext.current
-
+    var editedDescription by remember { mutableStateOf(article.description ?: "") }
+    var currentDescription by remember { mutableStateOf(article.description ?: "") }
 
 
     // Share function
@@ -75,6 +80,65 @@ fun DetailScreen(
 
         val shareIntent = Intent.createChooser(sendIntent, "Share Article")
         context.startActivity(shareIntent)
+    }
+
+    if(isEditedDescription){
+            AlertDialog(
+                onDismissRequest = { isEditedDescription = false },
+                containerColor = Color(0xFF1A1A1A),
+                title = {
+                    Text(
+                        text = "Edit Description",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = {
+
+                    Column {
+
+                        Text(
+                            text = "Edit Article Description",
+                            color = Color(0xFFB1B1B1)
+                        )
+
+                        Spacer(Modifier.height(10.dp))
+
+                        TextField(
+                            value = editedDescription,
+                            onValueChange = { editedDescription = it },
+                            singleLine = false,
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = TextStyle(color = Color.White),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color(0xFF2A2A2A),
+                                unfocusedContainerColor = Color(0xFF2A2A2A),
+                                cursorColor = Color.White,
+                                focusedIndicatorColor = Color(0xFF9E019E),
+                                unfocusedIndicatorColor = Color.Gray
+                            )
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        isEditedDescription = false
+                        currentDescription = editedDescription
+
+                        val updated = article.copy(description = editedDescription)
+
+                        viewModel.updateArticle(updated)
+
+                    }) {
+                        Text("Ok", color = Color(0xFF9E019E))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { isEditedDescription = false }) {
+                        Text("Cancel", color = Color(0xFFB1B1B1))
+                    }
+                }
+            )
     }
 
     Box(
@@ -314,21 +378,20 @@ fun DetailScreen(
 
                                 // Bookmark Button
                                 Surface(
-                                    onClick = { isBookmarked = !isBookmarked },
+                                    onClick = { isEditedDescription = !isEditedDescription },
                                     shape = CircleShape,
-                                    color = if (isBookmarked) Color(0xFFFFD700).copy(alpha = 0.2f)
+                                    color = if (isEditedDescription) Color(0xFFB1B1B1).copy(alpha = 0.6f)
                                     else Color(0xFF2A2A2A),
                                     modifier = Modifier.size(44.dp)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Icon(
-                                            painter = if(isBookmarked) painterResource(R.drawable.bookmark_check_24px) else painterResource(R.drawable.bookmark_24px),
+                                            painter = painterResource(R.drawable.edit_24px),
                                             contentDescription = "Bookmark",
-                                            tint = if (isBookmarked) Color(0xFFFFD700)
-                                            else Color(0xFFB1B1B1),
+                                            tint = Color(0xFFB1B1B1),
                                             modifier = Modifier
                                                 .size(20.dp)
-                                                .scale(if (isBookmarked) 1.2f else 1f)
+                                                .scale( 1f)
                                         )
                                     }
                                 }
@@ -401,7 +464,7 @@ fun DetailScreen(
                                     )
 
                                     Text(
-                                        text = article.description,
+                                        text = currentDescription,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Medium,
                                         color = Color(0xFFE0E0E0),

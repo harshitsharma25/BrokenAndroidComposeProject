@@ -62,6 +62,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.res.painterResource
 import com.greedygame.brokenandroidcomposeproject.Navigation.Screens
 import com.greedygame.brokenandroidcomposeproject.utils.Utility.Companion.formatDate
+import android.content.Intent
 
 @Composable
 fun HomeScreen(
@@ -126,6 +127,7 @@ fun ArticleScreen(
     navController: NavHostController,
     viewModel: HomeScreenViewModel
 ) {
+    val context = LocalContext.current
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.my_articles)) }) }
     ){ innerPadding ->
@@ -136,7 +138,7 @@ fun ArticleScreen(
             ) { article ->
                 ArticleCard(
                     article,
-                    onClick = {
+                    onReadMoreClicked = {
 //                        val articleId = article.url.hashCode()      // <-- safe Int id
 //                        navController.navigate("${Screens.DETAILS_SCREEN.name}/$articleId")
 //                        val encoded = Uri.encode(article.url)
@@ -145,6 +147,27 @@ fun ArticleScreen(
                         viewModel.selectArticle(article)
                         navController.navigate(Screens.DETAILS_SCREEN.name)
 
+                    },
+                    onShareClicked = {
+                        // Share function
+                            val shareText = buildString {
+                                append("📰 ${article.title}\n\n")
+                                if (!article.description.isNullOrEmpty()) {
+                                    append("${article.description}\n\n")
+                                }
+                                append("Read more: ${article.url}\n\n")
+                                append("Shared from ${article.source.name}")
+                            }
+
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                                putExtra(Intent.EXTRA_TITLE, article.title)
+                                type = "text/plain"
+                            }
+
+                            val shareIntent = Intent.createChooser(sendIntent, "Share Article")
+                            context.startActivity(shareIntent)
                     }
                 )
             }
@@ -170,9 +193,9 @@ fun ArticleScreen(
 //}
 
 @Composable
-fun ArticleCard(article: Article, onClick: () -> Unit) {
+fun ArticleCard(article: Article, onReadMoreClicked: () -> Unit , onShareClicked : () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
-    var isBookmarked by remember { mutableStateOf(false) }
+    var isEdited by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -435,21 +458,23 @@ fun ArticleCard(article: Article, onClick: () -> Unit) {
 
                                     // Bookmark Button
                                     IconButton(
-                                        onClick = { isBookmarked = !isBookmarked },
+                                        onClick = { isEdited = !isEdited },
                                         modifier = Modifier.size(32.dp)
                                     ) {
                                         Icon(
 //                                            imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                                            painter = if(isBookmarked) painterResource(R.drawable.bookmark_check_24px) else painterResource(R.drawable.bookmark_24px),
+                                            painter = if(isEdited) painterResource(R.drawable.bookmark_check_24px) else painterResource(R.drawable.bookmark_24px),
                                             contentDescription = "Bookmark",
-                                            tint = if (isBookmarked) Color(0xFFFFD700) else Color(0xFFB1B1B1),
+                                            tint = if (isEdited) Color(0xFFFFD700) else Color(0xFFB1B1B1),
                                             modifier = Modifier.size(18.dp)
                                         )
                                     }
 
                                     // Share Button
                                     IconButton(
-                                        onClick = { /* Handle share */ },
+                                        onClick = {
+                                            onShareClicked()
+                                        },
                                         modifier = Modifier.size(32.dp)
                                     ) {
                                         Icon(
@@ -464,7 +489,7 @@ fun ArticleCard(article: Article, onClick: () -> Unit) {
                                 // Read More Button with Glass Effect
                                 Surface(
                                     onClick = {
-                                        onClick()
+                                        onReadMoreClicked()
                                     },
                                     shape = RoundedCornerShape(16.dp),
                                     color = Color(0xFF9E019E).copy(alpha = 0.8f),
