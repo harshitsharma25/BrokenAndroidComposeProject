@@ -63,6 +63,7 @@ import androidx.compose.ui.res.painterResource
 import com.greedygame.brokenandroidcomposeproject.Navigation.Screens
 import com.greedygame.brokenandroidcomposeproject.utils.Utility.Companion.formatDate
 import android.content.Intent
+import androidx.compose.material3.TopAppBarDefaults
 
 @Composable
 fun HomeScreen(
@@ -111,7 +112,7 @@ fun HomeScreen(
             val articles =
                 (uiState as NewScreenUiState.NewScreenData).article
 
-            ArticleScreen(articles,modifier, navController = navController,viewModel)
+            ArticleScreen(articles,modifier, navController = navController,viewModel,colorScheme)
         }
 
         null -> Unit
@@ -125,11 +126,13 @@ fun ArticleScreen(
     articles: List<Article>,
     modifier: Modifier,
     navController: NavHostController,
-    viewModel: HomeScreenViewModel
+    viewModel: HomeScreenViewModel,
+    colorScheme: ColorScheme
 ) {
     val context = LocalContext.current
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.my_articles)) }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.my_articles)) },
+            colors = TopAppBarDefaults.topAppBarColors(colorScheme.primary.copy(alpha = 0.95f))) }
     ){ innerPadding ->
 
         LazyColumn(modifier = modifier.fillMaxSize().padding(innerPadding)) {
