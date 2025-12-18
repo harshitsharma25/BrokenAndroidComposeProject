@@ -115,7 +115,6 @@ fun HomeScreen(
             ArticleScreen(articles,modifier, navController = navController,viewModel,colorScheme)
         }
 
-        null -> Unit
     }
 }
 
